@@ -168,9 +168,22 @@ install_shell_packages() {
 
     log_step "Installing Desktop Shell"
 
-    # Always install quickshell and ly (common dependencies)
-    log_info "Installing display manager dependencies..."
-    sudo pacman -S --needed --noconfirm ly quickshell 2>/dev/null || true
+    # Install display manager first (required for login)
+    log_info "Installing display manager dependency (ly)..."
+    if ! sudo pacman -S --needed --noconfirm ly; then
+        log_error "Failed to install ly display manager"
+        return 1
+    fi
+
+    # Install shell runtime dependency based on selected shell.
+    # Noctalia uses noctalia-qs, which conflicts with plain quickshell.
+    if [ "$selected_shell" = "dms" ]; then
+        log_info "Installing DMS runtime dependency (quickshell)..."
+        if ! sudo pacman -S --needed --noconfirm quickshell; then
+            log_error "Failed to install quickshell for DMS"
+            return 1
+        fi
+    fi
 
     # Install the selected shell
     if [ "$selected_shell" = "noctalia" ]; then

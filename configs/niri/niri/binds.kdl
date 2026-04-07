@@ -13,13 +13,7 @@ binds {
     // shows a list of important hotkeys.
     Mod+Shift+Slash { show-hotkey-overlay; }
 
-    // Shell Commands
-    //
-    // Noctalia Shell
-    //Mod+Space hotkey-overlay-title="Open Noctalia Launcher" { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "toggle"; }
-    // Dank Material Shell
-    Mod+Space hotkey-overlay-title="Open DMS Launcher" { spawn "dms" "ipc" "call" "spotlight" "toggle"; }
-    Mod+Ctrl+Space hotkey-overlay-title="Open DMS Overview" { spawn "dms" "ipc" "call" "dash" "open" "overview"; }
+    // Shell launcher keybindings are managed in shell-switcher-binds.kdl.
 
     // Suggested binds for running programs: terminal, app launcher, screen locker.
 

@@ -319,5 +319,7 @@ animations {
 
 include "windowrules.kdl"
 include "binds.kdl"
+include "shell-switcher-binds.kdl"
 include "outputs.kdl"
+include "shell-switcher-startup.kdl"
 include "startup.kdl"

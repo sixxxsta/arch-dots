@@ -36,10 +36,10 @@ disable_other_display_managers() {
 enable_ly() {
     log_info "Enabling ly display manager service..."
 
-    if systemctl is-enabled ly.service &>/dev/null; then
+    if systemctl is-enabled ly@tty1.service &>/dev/null; then
         log_info "ly is already enabled"
     else
-        sudo systemctl enable ly.service
+        sudo systemctl enable ly@tty1.service
         log_success "ly service enabled"
     fi
 }

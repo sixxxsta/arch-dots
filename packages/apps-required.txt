@@ -2,3 +2,4 @@ kitty
 nemo
 fish
 fastfetch
+eza
