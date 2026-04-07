@@ -22,6 +22,7 @@ INSTALL_NIRI=false
 INSTALL_DCLI=false
 SELECTED_SHELL="noctalia"  # Default to noctalia
 OPTIONAL_APPS=()
+NVIDIA_HEADERS=""
 
 # Display welcome screen
 show_welcome() {
@@ -32,14 +33,16 @@ This installer will set up Beautiful Dots configurations for:
   • Niri - Scrollable-tiling Wayland compositor
   • Desktop Shell - Choose between Noctalia (recommended) or DMS
   • Catppuccin Mocha theme across all applications
+  • NVIDIA GPU support (auto-detected and installed if available)
 
 The installer will:
   1. Check your system requirements
-  2. Install the Niri compositor and desktop shell
-  3. Let you choose your preferred desktop shell (Noctalia or DMS)
-  4. Install required packages and optional applications
-  5. Deploy configuration files (via symlinks)
-  6. Apply themes and set up the display manager
+  2. Detect and install NVIDIA drivers if GPU is present
+  3. Install the Niri compositor and desktop shell
+  4. Let you choose your preferred desktop shell (Noctalia or DMS)
+  5. Install required packages and optional applications
+  6. Deploy configuration files (via symlinks)
+  7. Apply themes and set up the display manager
 
 Your existing .config will be backed up before any changes.
 
@@ -239,6 +242,14 @@ main() {
     # Run system checks
     run_all_checks || die "System checks failed"
 
+    # Detect NVIDIA GPU
+    if NVIDIA_HEADERS=$(detect_nvidia); then
+        log_info "NVIDIA GPU detected"
+    else
+        log_info "No NVIDIA GPU detected, skipping driver installation"
+        NVIDIA_HEADERS=""
+    fi
+
     # User selections
     select_compositors
     select_shell
@@ -252,6 +263,12 @@ main() {
     install_core_packages "$REPO_DIR" || die "Failed to install core packages"
     install_compositor_packages "$REPO_DIR" "$INSTALL_HYPRLAND" "$INSTALL_NIRI" || die "Failed to install compositor packages"
     install_theme_packages "$REPO_DIR" || die "Failed to install theme packages"
+    
+    # Install NVIDIA drivers if GPU detected
+    if [ -n "$NVIDIA_HEADERS" ]; then
+        install_nvidia_drivers "$REPO_DIR" "$NVIDIA_HEADERS" || log_warn "NVIDIA driver installation had issues"
+    fi
+    
     install_shell_packages "$REPO_DIR" "$SELECTED_SHELL" || die "Failed to install shell packages"
     install_required_apps "$REPO_DIR" || die "Failed to install required applications"
 

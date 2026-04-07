@@ -99,6 +99,46 @@ check_internet() {
     return 0
 }
 
+# Detect NVIDIA GPU and kernel version
+detect_nvidia() {
+    # Check if NVIDIA GPU is present
+    if ! lspci | grep -i nvidia >/dev/null 2>&1; then
+        return 1
+    fi
+
+    # Detect kernel type for appropriate headers
+    local kernel=$(uname -r | sed 's/-.*$//')
+    local kernel_line=$(pacman -Q | grep "^linux" | head -1)
+    local kernel_pkg=${kernel_line%% *}
+    
+    if [ -z "$kernel_pkg" ]; then
+        log_warn "Could not detect kernel package"
+        return 1
+    fi
+
+    # Determine headers package based on kernel
+    case "$kernel_pkg" in
+        linux)
+            echo "linux-headers"
+            ;;
+        linux-lts)
+            echo "linux-lts-headers"
+            ;;
+        linux-zen)
+            echo "linux-zen-headers"
+            ;;
+        linux-hardened)
+            echo "linux-hardened-headers"
+            ;;
+        *)
+            log_warn "Unknown kernel package: $kernel_pkg"
+            return 1
+            ;;
+    esac
+
+    return 0
+}
+
 # Run all checks
 run_all_checks() {
     log_step "Running System Checks"

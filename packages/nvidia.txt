@@ -1,0 +1,4 @@
+# NVIDIA GPU support packages
+dkms
+nvidia-dkms
+nvidia-utils

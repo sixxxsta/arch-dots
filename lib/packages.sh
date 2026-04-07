@@ -121,6 +121,39 @@ install_theme_packages() {
     install_package_list "$repo_dir/packages/themes.txt" "Themes"
 }
 
+# Install NVIDIA drivers if GPU is detected
+install_nvidia_drivers() {
+    local repo_dir="$1"
+    local headers_pkg="$2"
+
+    if [ -z "$headers_pkg" ]; then
+        log_warn "No NVIDIA GPU detected or kernel headers could not be determined"
+        return 0
+    fi
+
+    log_step "Installing NVIDIA Drivers"
+    log_info "Detected kernel headers: $headers_pkg"
+
+    # Install kernel headers first
+    log_info "Installing kernel headers..."
+    sudo pacman -S --needed --noconfirm "$headers_pkg"
+    if [ $? -ne 0 ]; then
+        log_warn "Failed to install kernel headers"
+        return 1
+    fi
+
+    # Install NVIDIA packages
+    log_info "Installing NVIDIA packages..."
+    install_package_list "$repo_dir/packages/nvidia.txt" "NVIDIA Drivers"
+    if [ $? -ne 0 ]; then
+        log_warn "NVIDIA driver installation had issues, but continuing"
+        return 0
+    fi
+
+    log_success "NVIDIA drivers installed successfully"
+    return 0
+}
+
 # Install DMS packages (legacy - installs both shells)
 install_dms_packages() {
     local repo_dir="$1"
