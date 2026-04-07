@@ -1,0 +1,12 @@
+hyprland
+hypridle
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+wl-clipboard
+grimblast-git
+grim
+slurp
+nwg-displays
+brightnessctl
+pavucontrol
+network-manager-applet

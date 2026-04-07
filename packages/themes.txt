@@ -1,0 +1,11 @@
+qt5-wayland
+qt6-wayland
+qt5ct
+qt6ct
+gtk3
+gtk4
+catppuccin-gtk-theme-mocha
+tela-icon-theme-purple-git
+bibata-cursor-theme-bin
+kvantum-theme-catppuccin-git
+matugen

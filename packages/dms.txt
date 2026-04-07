@@ -1,0 +1,4 @@
+dms-shell-git
+noctalia-shell
+quickshell
+ly

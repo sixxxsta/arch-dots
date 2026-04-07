@@ -1,0 +1,8 @@
+git
+cmake
+meson
+cpio
+gcc
+base-devel
+jq
+dialog

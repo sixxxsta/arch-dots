@@ -1,0 +1,22 @@
+# Installation logs
+*.log
+
+# Backup files
+*.backup
+*.bak
+*~
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
