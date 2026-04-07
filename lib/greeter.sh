@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ly display manager setup functions for donarch installer
+# greetd/regreet display manager setup functions for donarch installer
 
 # Source utils for logging
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,7 +10,7 @@ disable_other_display_managers() {
     log_info "Checking for conflicting display managers..."
 
     local disabled_any=false
-    for dm in gdm sddm lightdm lxdm greetd; do
+    for dm in gdm sddm lightdm lxdm ly; do
         if systemctl is-enabled "${dm}.service" &>/dev/null; then
             log_warn "Disabling ${dm} display manager..."
             sudo systemctl disable "${dm}.service" 2>/dev/null || true
@@ -18,9 +18,9 @@ disable_other_display_managers() {
         fi
     done
 
-    # Disable getty@tty1 to allow ly to use it
+    # Disable getty@tty1 to allow greetd to use it
     if systemctl is-enabled getty@tty1.service &>/dev/null; then
-        log_warn "Disabling getty@tty1.service for ly..."
+        log_warn "Disabling getty@tty1.service for greetd..."
         sudo systemctl disable getty@tty1.service
         disabled_any=true
     fi
@@ -32,28 +32,38 @@ disable_other_display_managers() {
     fi
 }
 
-# Enable ly service
-enable_ly() {
-    log_info "Enabling ly display manager service..."
+# Enable greetd service
+enable_greetd() {
+    log_info "Enabling greetd display manager service..."
 
-    if systemctl is-enabled ly@tty1.service &>/dev/null; then
-        log_info "ly is already enabled"
+    if systemctl is-enabled greetd.service &>/dev/null; then
+        log_info "greetd is already enabled"
     else
-        sudo systemctl enable ly@tty1.service
-        log_success "ly service enabled"
+        sudo systemctl enable greetd.service
+        log_success "greetd service enabled"
     fi
 }
 
-# Configure ly
-configure_ly() {
-    log_info "Configuring ly display manager..."
+# Configure greetd/regreet
+configure_greetd() {
+    log_info "Configuring greetd with regreet..."
 
-    # Ly configuration is in /etc/ly/config.ini
-    # For now, we'll use the defaults which work well
-    # Users can customize ~/.config/ly/config.ini later
+    sudo mkdir -p /etc/greetd
+    sudo tee /etc/greetd/config.toml > /dev/null << 'EOF'
+[terminal]
+vt = 1
 
-    log_success "ly configuration complete (using defaults)"
-    log_info "You can customize ly at ~/.config/ly/config.ini"
+[default_session]
+command = "cage -s -- regreet"
+user = "greeter"
+EOF
+
+    # Copy regreet sample config if available for a nicer default theme
+    if [ -f /usr/share/doc/greetd-regreet/regreet.sample.toml ]; then
+        sudo cp /usr/share/doc/greetd-regreet/regreet.sample.toml /etc/greetd/regreet.toml
+    fi
+
+    log_success "greetd/regreet configuration complete"
 }
 
 # Create Wayland session desktop files
@@ -107,8 +117,8 @@ setup_greeter() {
     echo ""
 
     disable_other_display_managers
-    enable_ly
-    configure_ly
+    enable_greetd
+    configure_greetd
     create_session_files "$install_hyprland" "$install_niri" "$selected_shell"
 
     echo ""

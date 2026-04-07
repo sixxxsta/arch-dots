@@ -41,8 +41,9 @@ The installer will:
   3. Install the Niri compositor and desktop shell
   4. Let you choose your preferred desktop shell (Noctalia or DMS)
   5. Install required packages and optional applications
-  6. Deploy configuration files (via symlinks)
-  7. Apply themes and set up the display manager
+    6. Install a nice greetd/regreet login screen
+    7. Deploy configuration files (via symlinks)
+    8. Apply themes and set up the display manager
 
 Your existing .config will be backed up before any changes.
 
@@ -225,7 +226,8 @@ post_install() {
     echo -e "${CYAN}Next Steps:${NC}"
     echo "  1. Reboot your system to activate the display manager"
     echo "  2. At the login screen, select your preferred session:"
-    echo "     • Niri"
+    [ "$INSTALL_HYPRLAND" = true ] && echo "     • Hyprland"
+    [ "$INSTALL_NIRI" = true ] && echo "     • Niri"
     echo "  3. Log in and enjoy your beautiful desktop!"
     echo ""
     echo -e "${CYAN}Key Bindings:${NC}"
@@ -294,6 +296,7 @@ main() {
     install_core_packages "$REPO_DIR" || die "Failed to install core packages"
     install_compositor_packages "$REPO_DIR" "$INSTALL_HYPRLAND" "$INSTALL_NIRI" || die "Failed to install compositor packages"
     install_theme_packages "$REPO_DIR" || die "Failed to install theme packages"
+    install_login_packages "$REPO_DIR" || die "Failed to install login manager packages"
     
     # Install NVIDIA drivers if GPU detected
     if [ -n "$NVIDIA_HEADERS" ]; then

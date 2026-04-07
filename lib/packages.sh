@@ -121,6 +121,13 @@ install_theme_packages() {
     install_package_list "$repo_dir/packages/themes.txt" "Themes"
 }
 
+# Install login manager packages
+install_login_packages() {
+    local repo_dir="$1"
+    log_step "Installing Login Manager"
+    install_package_list "$repo_dir/packages/login.txt" "Login Manager"
+}
+
 # Install NVIDIA drivers if GPU is detected
 install_nvidia_drivers() {
     local repo_dir="$1"
@@ -167,13 +174,6 @@ install_shell_packages() {
     local selected_shell="$2"
 
     log_step "Installing Desktop Shell"
-
-    # Install display manager first (required for login)
-    log_info "Installing display manager dependency (ly)..."
-    if ! sudo pacman -S --needed --noconfirm ly; then
-        log_error "Failed to install ly display manager"
-        return 1
-    fi
 
     # Install shell runtime dependency based on selected shell.
     # Noctalia uses noctalia-qs, which conflicts with plain quickshell.
