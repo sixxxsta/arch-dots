@@ -194,7 +194,7 @@ validate_niri_configuration() {
     fi
 
     log_info "Validating Niri configuration..."
-    if ! niri validate "$niri_config"; then
+    if ! niri validate; then
         log_error "Niri configuration validation failed"
         log_info "Fix config errors and run the installer again"
         return 1
