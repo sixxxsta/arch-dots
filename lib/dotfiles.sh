@@ -188,6 +188,7 @@ merge_dms_configs() {
     # Merge JSON files with jq and replace hardcoded paths
     jq -s '.[0] * .[1]' "$base_settings" "$compositor_settings" | \
         sed "s|\$HOME|$user_home|g" | \
+        sed "s|\"customThemeFile\": \"themes/catppuccin/theme.json\"|\"customThemeFile\": \"$dms_dir/themes/catppuccin/theme.json\"|g" | \
         sed "s|/home/don/bd-configs/assets|$config_dir/donarch/assets|g" | \
         sed "s|/home/don/.config/arch-config/modules/bdots-hypr|$config_dir/donarch/assets|g" \
         > "$dms_dir/settings.json"
