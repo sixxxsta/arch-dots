@@ -173,6 +173,37 @@ confirm_backup() {
     echo ""
 }
 
+# Validate Niri configuration after deployment
+validate_niri_configuration() {
+    local user_home
+    user_home="$(get_user_home)"
+    local niri_config="$user_home/.config/niri/config.kdl"
+
+    if [ "$INSTALL_NIRI" != true ]; then
+        return 0
+    fi
+
+    if ! command_exists niri; then
+        log_warn "niri command not found, skipping config validation"
+        return 0
+    fi
+
+    if [ ! -f "$niri_config" ]; then
+        log_error "Niri config not found at $niri_config"
+        return 1
+    fi
+
+    log_info "Validating Niri configuration..."
+    if ! niri validate "$niri_config"; then
+        log_error "Niri configuration validation failed"
+        log_info "Fix config errors and run the installer again"
+        return 1
+    fi
+
+    log_success "Niri configuration is valid"
+    return 0
+}
+
 # Post-installation steps
 post_install() {
     log_step "Post-Installation"
@@ -278,6 +309,9 @@ main() {
 
     # Deploy configurations
     deploy_configurations "$REPO_DIR" "$INSTALL_HYPRLAND" "$INSTALL_NIRI" "$SELECTED_SHELL" || die "Failed to deploy configurations"
+
+    # Validate compositor configuration
+    validate_niri_configuration || die "Failed to validate Niri configuration"
 
     # Apply themes
     apply_themes "$REPO_DIR" "$INSTALL_HYPRLAND" "$INSTALL_NIRI" || die "Failed to apply themes"

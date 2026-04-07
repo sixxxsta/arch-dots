@@ -178,10 +178,26 @@ install_shell_packages() {
     # Install shell runtime dependency based on selected shell.
     # Noctalia uses noctalia-qs, which conflicts with plain quickshell.
     if [ "$selected_shell" = "dms" ]; then
+        if pacman -Q noctalia-qs >/dev/null 2>&1; then
+            log_info "Removing conflicting package: noctalia-qs"
+            sudo pacman -Rns --noconfirm noctalia-qs || {
+                log_warn "Could not remove noctalia-qs automatically"
+                log_warn "Please remove it manually if DMS installation fails"
+            }
+        fi
+
         log_info "Installing DMS runtime dependency (quickshell)..."
         if ! sudo pacman -S --needed --noconfirm quickshell; then
             log_error "Failed to install quickshell for DMS"
             return 1
+        fi
+    else
+        if pacman -Q quickshell >/dev/null 2>&1; then
+            log_info "Removing conflicting package: quickshell"
+            sudo pacman -Rns --noconfirm quickshell || {
+                log_warn "Could not remove quickshell automatically"
+                log_warn "Please remove it manually if Noctalia installation fails"
+            }
         fi
     fi
 

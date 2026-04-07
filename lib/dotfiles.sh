@@ -286,10 +286,11 @@ EOF
 // This file is managed by shell-switch - manual edits will be overwritten
 // Current shell: ${shell_name}
 
-// Application launcher
-Mod+Space {
-    spawn ${launcher_cmd_args}
-    hotkey-overlay-title = "Launcher"
+binds {
+    // Application launcher
+    Mod+Space hotkey-overlay-title="Launcher" {
+        spawn ${launcher_cmd_args};
+    }
 }
 EOF
 
