@@ -178,12 +178,21 @@ install_shell_packages() {
     # Install shell runtime dependency based on selected shell.
     # Noctalia uses noctalia-qs, which conflicts with plain quickshell.
     if [ "$selected_shell" = "dms" ]; then
+        # If switching from Noctalia -> DMS, remove Noctalia first so its deps can be removed.
+        if pacman -Q noctalia-shell >/dev/null 2>&1; then
+            log_info "Detected noctalia-shell; removing it to switch to DMS..."
+            if ! sudo pacman -Rns --noconfirm noctalia-shell; then
+                log_error "Failed to remove noctalia-shell while switching to DMS"
+                return 1
+            fi
+        fi
+
         if pacman -Q noctalia-qs >/dev/null 2>&1; then
             log_info "Removing conflicting package: noctalia-qs"
-            sudo pacman -Rns --noconfirm noctalia-qs || {
-                log_warn "Could not remove noctalia-qs automatically"
-                log_warn "Please remove it manually if DMS installation fails"
-            }
+            if ! sudo pacman -Rns --noconfirm noctalia-qs; then
+                log_error "Failed to remove noctalia-qs"
+                return 1
+            fi
         fi
 
         log_info "Installing DMS runtime dependency (quickshell)..."
@@ -192,12 +201,21 @@ install_shell_packages() {
             return 1
         fi
     else
+        # If switching from DMS -> Noctalia, remove DMS first so quickshell can be removed.
+        if pacman -Q dms-shell-git >/dev/null 2>&1; then
+            log_info "Detected dms-shell-git; removing it to switch to Noctalia..."
+            if ! sudo pacman -Rns --noconfirm dms-shell-git; then
+                log_error "Failed to remove dms-shell-git while switching to Noctalia"
+                return 1
+            fi
+        fi
+
         if pacman -Q quickshell >/dev/null 2>&1; then
             log_info "Removing conflicting package: quickshell"
-            sudo pacman -Rns --noconfirm quickshell || {
-                log_warn "Could not remove quickshell automatically"
-                log_warn "Please remove it manually if Noctalia installation fails"
-            }
+            if ! sudo pacman -Rns --noconfirm quickshell; then
+                log_error "Failed to remove quickshell"
+                return 1
+            fi
         fi
     fi
 
