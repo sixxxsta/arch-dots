@@ -8,6 +8,37 @@ log() {
     printf '[pretty-login] %s\n' "$1"
 }
 
+detect_current_wallpaper() {
+    local user_home
+    user_home="${HOME}"
+    local cfg
+    local wp
+
+    # Try to read currently configured swaybg wallpaper from Niri startup.
+    cfg="${user_home}/.config/niri/startup.kdl"
+    if [[ -f "${cfg}" ]]; then
+        wp="$(grep -Eo 'swaybg -i "[^"]+"' "${cfg}" | head -n 1 | sed -E 's/^swaybg -i "(.*)"$/\1/' || true)"
+        if [[ -n "${wp}" ]]; then
+            wp="${wp/#\$HOME/${user_home}}"
+            [[ -f "${wp}" ]] && echo "${wp}" && return 0
+        fi
+    fi
+
+    # Common DonArch wallpaper locations.
+    for wp in \
+        "${user_home}/.config/niri/wallpapers/wallpaper.png" \
+        "${user_home}/.config/hypr/wallpapers/wallpaper.png" \
+        "${user_home}/.config/donarch/assets/wallpapers/wallpaper.png" \
+        "${REPO_DIR}/assets/wallpapers/wallpaper.png"; do
+        if [[ -f "${wp}" ]]; then
+            echo "${wp}"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
 install_aur_first_available() {
     local pkg
     for pkg in "$@"; do
@@ -62,6 +93,16 @@ elif [[ -n "${GENERIC_THEME}" ]]; then
     SELECTED_THEME="${GENERIC_THEME}"
 fi
 
+# If Sugar Candy is unavailable, fall back to a built-in theme with cleaner look.
+if [[ -z "${SELECTED_THEME}" ]]; then
+    for candidate in maya elarun maldives; do
+        if [[ -d "/usr/share/sddm/themes/${candidate}" ]]; then
+            SELECTED_THEME="${candidate}"
+            break
+        fi
+    done
+fi
+
 log "Ensuring Niri session entry exists..."
 sudo mkdir -p /usr/share/wayland-sessions
 sudo tee /usr/share/wayland-sessions/niri.desktop >/dev/null << 'EOF'
@@ -86,12 +127,13 @@ fi
 
 if [[ -n "${SUGAR_THEME}" ]]; then
     THEME_DIR="/usr/share/sddm/themes/${SUGAR_THEME}"
-    WALLPAPER_SRC="${REPO_DIR}/assets/wallpapers/wallpaper.png"
+    WALLPAPER_SRC="$(detect_current_wallpaper || true)"
     WALLPAPER_DST="${THEME_DIR}/Backgrounds/donarch-wallpaper.png"
 
     if [[ -f "${WALLPAPER_SRC}" ]]; then
         sudo mkdir -p "${THEME_DIR}/Backgrounds"
         sudo cp "${WALLPAPER_SRC}" "${WALLPAPER_DST}"
+        log "Using current desktop wallpaper: ${WALLPAPER_SRC}"
     else
         WALLPAPER_DST=""
     fi
@@ -100,8 +142,8 @@ if [[ -n "${SUGAR_THEME}" ]]; then
     if [[ -n "${WALLPAPER_DST}" ]]; then
         sudo tee "${THEME_DIR}/theme.conf.user" >/dev/null << EOF
 Background="${WALLPAPER_DST}"
-DimBackgroundImage="0.20"
-BlurRadius="18"
+DimBackgroundImage="0.30"
+BlurRadius="28"
 ScaleImageCropped="true"
 
 ScreenPadding="40"
@@ -109,22 +151,22 @@ FormPosition="center"
 HaveFormBackground="true"
 PartialBlur="true"
 FullBlur="false"
-FormBackgroundColor="\"#11111bdd\""
+FormBackgroundColor="\"#0f1117dd\""
 BackgroundColor="\"#1e1e2eff\""
-MainColor="\"#cba6f7ff\""
-AccentColor="\"#89b4faff\""
-OverrideLoginButtonTextColor="\"#11111bff\""
-RoundCorners="24"
+MainColor="\"#d0d8ffff\""
+AccentColor="\"#8ec5fcff\""
+OverrideLoginButtonTextColor="\"#0b1020ff\""
+RoundCorners="20"
 HeaderText="Welcome"
 EOF
     else
         sudo tee "${THEME_DIR}/theme.conf.user" >/dev/null << 'EOF'
-DimBackgroundImage="0.20"
-BlurRadius="18"
+DimBackgroundImage="0.30"
+BlurRadius="28"
 FormPosition="center"
 HaveFormBackground="true"
 PartialBlur="true"
-RoundCorners="24"
+RoundCorners="20"
 HeaderText="Welcome"
 EOF
     fi
