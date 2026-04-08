@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-#!/usr/bin/env bash
-set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -179,4 +177,3 @@ systemctl get-default || true
 systemctl status display-manager --no-pager -l | tail -n 30 || true
 
 log "Done. Reboot now to see the new minimalist login."
-if [[ -n "${SUGAR_THEME}" ]]; then

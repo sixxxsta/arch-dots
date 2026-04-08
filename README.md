@@ -69,6 +69,10 @@ After installer completes:
 chmod +x ./scripts/enable-pretty-login.sh
 ./scripts/enable-pretty-login.sh
 
+# 3b) (Optional) Enable RU/EN locales + Alt+Shift keyboard switching
+chmod +x ./scripts/setup-ru-en.sh
+./scripts/setup-ru-en.sh
+
 # 4) Reboot
 sudo reboot
 ```
@@ -77,6 +81,7 @@ Notes:
 - The script automatically switches to SDDM and disables `ly`/`greetd`.
 - If Sugar Candy theme is available, it auto-applies wallpaper + cleaner form styling.
 - If only Catppuccin SDDM theme is available, it applies that automatically.
+- Language/input setup is intentionally separate from login theming for easier troubleshooting.
 
 The installer will guide you through:
 1. System compatibility checks
