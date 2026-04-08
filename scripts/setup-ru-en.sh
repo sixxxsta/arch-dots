@@ -26,7 +26,8 @@ log "Setting default locale to Russian (change manually if needed)..."
 sudo localectl set-locale LANG=ru_RU.UTF-8
 
 log "Configuring keyboard layouts US/RU with Alt+Shift switch..."
-sudo localectl set-keymap us,ru
+# Console keymap must be a single layout (no commas).
+sudo localectl set-keymap us
 sudo localectl set-x11-keymap us,ru "" "" grp:alt_shift_toggle
 
 log "Done. Re-login (or reboot) to apply language/input changes everywhere."
