@@ -86,8 +86,12 @@ ensure_niri_wallpaper() {
         fi
 
         if [[ -n "${source_wall}" && -f "${source_wall}" ]]; then
+            if [[ "$(readlink -f "${source_wall}")" != "$(readlink -f "${niri_wall}")" ]]; then
                 cp -f "${source_wall}" "${niri_wall}"
                 log "Niri wallpaper synced: ${source_wall}"
+            else
+                log "Niri wallpaper already in place: ${source_wall}"
+            fi
 
             if command -v swaybg >/dev/null 2>&1; then
                 pkill -x swaybg >/dev/null 2>&1 || true
