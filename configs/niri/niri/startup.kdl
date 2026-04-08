@@ -2,7 +2,6 @@
 
 spawn-at-startup "sunshine"
 spawn-at-startup "swayidle"
-spawn-at-startup "waybar"
 spawn-at-startup "mako"
 spawn-sh-at-startup "if [ -f \"$HOME/.config/niri/wallpapers/wallpaper.png\" ]; then swaybg -i \"$HOME/.config/niri/wallpapers/wallpaper.png\" -m fill; fi"
 // spawn-sh-at-startup "$HOME/.config/niri/Scripts/zed-resize-fix.sh"
