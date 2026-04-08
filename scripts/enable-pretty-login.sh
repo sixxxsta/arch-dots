@@ -35,6 +35,7 @@ sudo pacman -S --needed --noconfirm sddm
 SELECTED_THEME=""
 SUGAR_THEME=""
 CATPPUCCIN_THEME=""
+GENERIC_THEME=""
 
 if command -v paru >/dev/null 2>&1; then
     log "Trying to install SDDM themes from AUR..."
@@ -50,12 +51,15 @@ fi
 if [[ -d /usr/share/sddm/themes ]]; then
     SUGAR_THEME="$(find /usr/share/sddm/themes -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | grep -Ei 'sugar[-_ ]?candy' | head -n 1 || true)"
     CATPPUCCIN_THEME="$(find /usr/share/sddm/themes -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | grep -Ei '^catppuccin' | head -n 1 || true)"
+    GENERIC_THEME="$(find /usr/share/sddm/themes -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | head -n 1 || true)"
 fi
 
 if [[ -n "${SUGAR_THEME}" ]]; then
     SELECTED_THEME="${SUGAR_THEME}"
 elif [[ -n "${CATPPUCCIN_THEME}" ]]; then
     SELECTED_THEME="${CATPPUCCIN_THEME}"
+elif [[ -n "${GENERIC_THEME}" ]]; then
+    SELECTED_THEME="${GENERIC_THEME}"
 fi
 
 log "Ensuring Niri session entry exists..."
@@ -77,7 +81,7 @@ Current=${SELECTED_THEME}
 EOF
     log "Using SDDM theme: ${SELECTED_THEME}"
 else
-    log "No Catppuccin SDDM theme found; leaving default SDDM theme."
+    log "No SDDM themes detected in /usr/share/sddm/themes; keeping defaults."
 fi
 
 if [[ -n "${SUGAR_THEME}" ]]; then
