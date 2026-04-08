@@ -41,6 +41,43 @@ cd donarch
 ./install.sh
 ```
 
+### Full Installation Algorithm (Recommended)
+
+Use this when you want a predictable install with DMS and an automatic prettier login screen.
+
+```bash
+# 1) Fresh clone (recommended)
+cd ~
+rm -rf arch-dots
+git clone https://github.com/sixxxsta/arch-dots.git
+cd arch-dots
+
+# 2) Run installer
+./install.sh
+```
+
+Installer choices:
+1. Compositor: `Niri`
+2. Shell: `DMS` (or `Noctalia` if you prefer stability first)
+3. dcli: `No`
+4. Backup: `Yes`
+
+After installer completes:
+
+```bash
+# 3) Enable automatic pretty login (SDDM + themed setup)
+chmod +x ./scripts/enable-pretty-login.sh
+./scripts/enable-pretty-login.sh
+
+# 4) Reboot
+sudo reboot
+```
+
+Notes:
+- The script automatically switches to SDDM and disables `ly`/`greetd`.
+- If Sugar Candy theme is available, it auto-applies wallpaper + cleaner form styling.
+- If only Catppuccin SDDM theme is available, it applies that automatically.
+
 The installer will guide you through:
 1. System compatibility checks
 2. Niri compositor installation
