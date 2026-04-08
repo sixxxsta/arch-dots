@@ -48,7 +48,6 @@ deploy_shared_configs() {
     local shared_configs=(
         "kitty"
         "fish"
-        "flameshot"
         "gtk-3.0"
         "gtk-4.0"
         "noctalia"
@@ -76,6 +75,15 @@ deploy_shared_configs() {
             fi
         fi
     done
+
+    # Flameshot needs a user-specific absolute save path, so generate it instead of symlinking.
+    if [ -d "$repo_dir/configs/shared/flameshot" ]; then
+        log_info "Processing flameshot config with path expansion..."
+        mkdir -p "$config_dir/flameshot"
+        if [ -f "$repo_dir/configs/shared/flameshot/flameshot.ini" ]; then
+            sed "s|\$HOME|$user_home|g; s|~|$user_home|g" "$repo_dir/configs/shared/flameshot/flameshot.ini" > "$config_dir/flameshot/flameshot.ini"
+        fi
+    fi
 
     # Handle Qt configs separately to process $HOME variable
     for qt_config in "qt5ct" "qt6ct"; do
