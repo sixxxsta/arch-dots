@@ -3,7 +3,7 @@
 spawn-at-startup "sunshine"
 spawn-at-startup "swayidle"
 spawn-at-startup "mako"
-spawn-sh-at-startup "if [ -f \"$HOME/.config/niri/wallpapers/main-wallpaper.png\" ]; then swaybg -i \"$HOME/.config/niri/wallpapers/main-wallpaper.png\" -m fill; fi"
+spawn-sh-at-startup "if [ -f \"$HOME/.config/niri/wallpapers/main-wallpaper.jpg\" ]; then swaybg -i \"$HOME/.config/niri/wallpapers/main-wallpaper.jpg\" -m fill; fi"
 // spawn-sh-at-startup "$HOME/.config/niri/Scripts/zed-resize-fix.sh"
 
 // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:

@@ -74,12 +74,14 @@ EOF
 
 ensure_niri_wallpaper() {
         local niri_wall_dir="${HOME}/.config/niri/wallpapers"
-        local niri_wall="${niri_wall_dir}/main-wallpaper.png"
+    local niri_wall="${niri_wall_dir}/main-wallpaper.jpg"
         local source_wall=""
 
         mkdir -p "${niri_wall_dir}"
 
-        if [[ -f "${REPO_DIR}/assets/wallpapers/main-wallpaper.png" ]]; then
+        if [[ -f "${REPO_DIR}/assets/main-wallpaper.jpg" ]]; then
+            source_wall="${REPO_DIR}/assets/main-wallpaper.jpg"
+        elif [[ -f "${REPO_DIR}/assets/wallpapers/main-wallpaper.png" ]]; then
             source_wall="${REPO_DIR}/assets/wallpapers/main-wallpaper.png"
         elif [[ -f "${REPO_DIR}/assets/wallpapers/wallpaper.png" ]]; then
             source_wall="${REPO_DIR}/assets/wallpapers/wallpaper.png"
@@ -110,10 +112,10 @@ ensure_niri_wallpaper() {
                 cat > "${startup_cfg}" << 'EOF'
 // Start up Commands
 
-spawn-sh-at-startup "if [ -f \"$HOME/.config/niri/wallpapers/main-wallpaper.png\" ]; then pkill -x swaybg >/dev/null 2>&1 || true; swaybg -i \"$HOME/.config/niri/wallpapers/main-wallpaper.png\" -m fill; fi"
+spawn-sh-at-startup "if [ -f \"$HOME/.config/niri/wallpapers/main-wallpaper.jpg\" ]; then pkill -x swaybg >/dev/null 2>&1 || true; swaybg -i \"$HOME/.config/niri/wallpapers/main-wallpaper.jpg\" -m fill; fi"
 EOF
-    elif ! grep -q 'wallpapers/main-wallpaper.png' "${startup_cfg}"; then
-        printf '\nspawn-sh-at-startup "if [ -f \\\"$HOME/.config/niri/wallpapers/main-wallpaper.png\\\" ]; then pkill -x swaybg >/dev/null 2>&1 || true; swaybg -i \\\"$HOME/.config/niri/wallpapers/main-wallpaper.png\\\" -m fill; fi"\n' >> "${startup_cfg}"
+    elif ! grep -q 'wallpapers/main-wallpaper.jpg' "${startup_cfg}"; then
+        printf '\nspawn-sh-at-startup "if [ -f \\\"$HOME/.config/niri/wallpapers/main-wallpaper.jpg\\\" ]; then pkill -x swaybg >/dev/null 2>&1 || true; swaybg -i \\\"$HOME/.config/niri/wallpapers/main-wallpaper.jpg\\\" -m fill; fi"\n' >> "${startup_cfg}"
         fi
 }
 
@@ -206,11 +208,15 @@ detect_current_wallpaper() {
     fi
 
     for wp in \
+        "${user_home}/.config/niri/wallpapers/main-wallpaper.jpg" \
         "${user_home}/.config/niri/wallpapers/main-wallpaper.png" \
         "${user_home}/.config/niri/wallpapers/wallpaper.png" \
+        "${user_home}/.config/hypr/wallpapers/main-wallpaper.jpg" \
         "${user_home}/.config/hypr/wallpapers/main-wallpaper.png" \
         "${user_home}/.config/hypr/wallpapers/wallpaper.png" \
+        "${user_home}/.config/donarch/assets/main-wallpaper.jpg" \
         "${user_home}/.config/donarch/assets/wallpapers/wallpaper.png" \
+        "${REPO_DIR}/assets/main-wallpaper.jpg" \
         "${REPO_DIR}/assets/wallpapers/main-wallpaper.png" \
         "${REPO_DIR}/assets/wallpapers/wallpaper.png"; do
         if [[ -f "${wp}" ]]; then
@@ -320,8 +326,8 @@ FullBlur="false"
 FormBackgroundColor="\"#090d16e6\""
 BackgroundColor="\"#0b1020ff\""
 MainColor="\"#f8fafcff\""
-AccentColor="\"#38bdf8ff\""
-OverrideLoginButtonTextColor="\"#0b1020ff\""
+AccentColor="\"#67e8f9ff\""
+OverrideLoginButtonTextColor="\"#f8fafcff\""
 RoundCorners="22"
 HeaderText="Welcome"
 EOF

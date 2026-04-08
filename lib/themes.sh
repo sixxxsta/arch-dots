@@ -110,8 +110,13 @@ setup_wallpapers() {
 
     log_info "Setting up wallpapers..."
 
-    local wallpaper_source="$repo_dir/assets/wallpapers/main-wallpaper.png"
+    local wallpaper_source="$repo_dir/assets/main-wallpaper.jpg"
+    local fallback_wallpaper_source="$repo_dir/assets/wallpapers/main-wallpaper.png"
     local legacy_wallpaper_source="$repo_dir/assets/wallpapers/wallpaper.png"
+
+    if [ ! -f "$wallpaper_source" ] && [ -f "$fallback_wallpaper_source" ]; then
+        wallpaper_source="$fallback_wallpaper_source"
+    fi
 
     if [ ! -f "$wallpaper_source" ] && [ -f "$legacy_wallpaper_source" ]; then
         wallpaper_source="$legacy_wallpaper_source"
@@ -126,10 +131,12 @@ setup_wallpapers() {
     if [ "$install_hyprland" = "true" ]; then
         local hypr_wallpaper_dir="$user_home/.config/hypr/wallpapers"
         mkdir -p "$hypr_wallpaper_dir"
+        ln -sf "$wallpaper_source" "$hypr_wallpaper_dir/main-wallpaper.jpg"
         ln -sf "$wallpaper_source" "$hypr_wallpaper_dir/main-wallpaper.png"
         ln -sf "$wallpaper_source" "$hypr_wallpaper_dir/wallpaper.png"
 
         if [ "$EUID" -eq 0 ]; then
+            chown -h "$user:$user" "$hypr_wallpaper_dir/main-wallpaper.jpg"
             chown -h "$user:$user" "$hypr_wallpaper_dir/main-wallpaper.png"
             chown -h "$user:$user" "$hypr_wallpaper_dir/wallpaper.png"
             chown "$user:$user" "$hypr_wallpaper_dir"
@@ -142,10 +149,12 @@ setup_wallpapers() {
     if [ "$install_niri" = "true" ]; then
         local niri_wallpaper_dir="$user_home/.config/niri/wallpapers"
         mkdir -p "$niri_wallpaper_dir"
+        ln -sf "$wallpaper_source" "$niri_wallpaper_dir/main-wallpaper.jpg"
         ln -sf "$wallpaper_source" "$niri_wallpaper_dir/main-wallpaper.png"
         ln -sf "$wallpaper_source" "$niri_wallpaper_dir/wallpaper.png"
 
         if [ "$EUID" -eq 0 ]; then
+            chown -h "$user:$user" "$niri_wallpaper_dir/main-wallpaper.jpg"
             chown -h "$user:$user" "$niri_wallpaper_dir/main-wallpaper.png"
             chown -h "$user:$user" "$niri_wallpaper_dir/wallpaper.png"
             chown "$user:$user" "$niri_wallpaper_dir"
