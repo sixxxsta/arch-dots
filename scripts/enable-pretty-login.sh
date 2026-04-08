@@ -8,6 +8,109 @@ log() {
     printf '[pretty-login] %s\n' "$1"
 }
 
+ensure_waybar_fallback_config() {
+        local waybar_dir="${HOME}/.config/waybar"
+        mkdir -p "${waybar_dir}"
+
+        if [[ ! -f "${waybar_dir}/config.jsonc" ]]; then
+                cat > "${waybar_dir}/config.jsonc" << 'EOF'
+[
+    {
+        "layer": "top",
+        "position": "top",
+        "height": 34,
+        "modules-left": ["niri/workspaces"],
+        "modules-center": ["niri/window"],
+        "modules-right": ["pulseaudio", "network", "clock", "tray"]
+    },
+    {
+        "layer": "top",
+        "position": "bottom",
+        "height": 36,
+        "modules-left": ["wlr/taskbar"],
+        "modules-center": [],
+        "modules-right": []
+    }
+]
+EOF
+        fi
+
+        if [[ ! -f "${waybar_dir}/style.css" ]]; then
+                cat > "${waybar_dir}/style.css" << 'EOF'
+* {
+    font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+    font-size: 13px;
+}
+
+window#waybar {
+    background: rgba(10, 14, 25, 0.86);
+    color: #f8fafc;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+#workspaces button,
+#taskbar button {
+    color: #f8fafc;
+    background: transparent;
+    border-radius: 10px;
+    padding: 0 10px;
+    margin: 3px;
+}
+
+#workspaces button.active,
+#taskbar button.active {
+    background: rgba(56, 189, 248, 0.25);
+}
+
+#clock,
+#network,
+#pulseaudio,
+#tray {
+    margin: 0 8px;
+}
+EOF
+        fi
+}
+
+ensure_niri_wallpaper() {
+        local niri_wall_dir="${HOME}/.config/niri/wallpapers"
+        local niri_wall="${niri_wall_dir}/wallpaper.png"
+        local source_wall=""
+
+        mkdir -p "${niri_wall_dir}"
+
+        if [[ -f "${REPO_DIR}/assets/wallpapers/wallpaper.png" ]]; then
+                source_wall="${REPO_DIR}/assets/wallpapers/wallpaper.png"
+        else
+                source_wall="$(find "${REPO_DIR}/assets/wallpapers" -maxdepth 1 -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' \) | head -n 1 || true)"
+        fi
+
+        if [[ -n "${source_wall}" && -f "${source_wall}" ]]; then
+                cp -f "${source_wall}" "${niri_wall}"
+                log "Niri wallpaper synced: ${source_wall}"
+
+            if command -v swaybg >/dev/null 2>&1; then
+                pkill -x swaybg >/dev/null 2>&1 || true
+                nohup swaybg -i "${niri_wall}" -m fill >/dev/null 2>&1 &
+                log "Wallpaper applied in current session"
+            fi
+        else
+                log "Could not find wallpaper in repo assets; keeping current wallpaper state."
+        fi
+
+        local startup_cfg="${HOME}/.config/niri/startup.kdl"
+        mkdir -p "${HOME}/.config/niri"
+        if [[ ! -f "${startup_cfg}" ]]; then
+                cat > "${startup_cfg}" << 'EOF'
+// Start up Commands
+
+spawn-sh-at-startup "if [ -f \"$HOME/.config/niri/wallpapers/wallpaper.png\" ]; then pkill -x swaybg >/dev/null 2>&1 || true; swaybg -i \"$HOME/.config/niri/wallpapers/wallpaper.png\" -m fill; fi"
+EOF
+        elif ! grep -q 'wallpapers/wallpaper.png' "${startup_cfg}"; then
+                printf '\nspawn-sh-at-startup "if [ -f \\\"$HOME/.config/niri/wallpapers/wallpaper.png\\\" ]; then pkill -x swaybg >/dev/null 2>&1 || true; swaybg -i \\\"$HOME/.config/niri/wallpapers/wallpaper.png\\\" -m fill; fi"\n' >> "${startup_cfg}"
+        fi
+}
+
 ensure_niri_shell_fallback() {
     local niri_dir="${HOME}/.config/niri"
     local main_cfg="${niri_dir}/config.kdl"
@@ -32,7 +135,7 @@ EOF
 binds {
     // App launcher with fallback
     Mod+Space hotkey-overlay-title="Open Launcher" {
-        spawn "bash" "-lc" "if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell ipc call launcher toggle; elif command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; fi";
+        spawn "bash" "-lc" "if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell ipc call launcher toggle; elif command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; elif command -v wofi >/dev/null 2>&1; then wofi --show drun; fi";
     }
 
     // Shell switcher
@@ -58,7 +161,7 @@ EOF
         niri msg action reload-config >/dev/null 2>&1 || true
     fi
 
-    if ! pgrep -f 'qs.*noctalia-shell|quickshell.*noctalia-shell|dms run' >/dev/null 2>&1; then
+    if ! pgrep -f 'qs.*noctalia-shell|quickshell.*noctalia-shell|dms run|waybar' >/dev/null 2>&1; then
         if command -v qs >/dev/null 2>&1; then
             nohup qs -c noctalia-shell >/dev/null 2>&1 &
             log "Started Noctalia shell for current session"
@@ -68,8 +171,12 @@ EOF
         elif command -v dms >/dev/null 2>&1; then
             nohup dms run >/dev/null 2>&1 &
             log "Started DMS shell for current session"
+        elif command -v waybar >/dev/null 2>&1; then
+            ensure_waybar_fallback_config
+            nohup waybar >/dev/null 2>&1 &
+            log "Started Waybar fallback for current session"
         else
-            log "Neither Noctalia nor DMS is installed; shell UI cannot be started."
+            log "Neither Noctalia, DMS, nor Waybar is available; shell UI cannot be started."
         fi
     fi
 }
@@ -129,6 +236,9 @@ log "Installing SDDM and required runtime dependencies..."
 sudo pacman -S --needed --noconfirm \
     sddm \
     git \
+    swaybg \
+    waybar \
+    wofi \
     qt6-5compat \
     qt6-declarative \
     qt6-svg
@@ -160,6 +270,7 @@ Type=Application
 EOF
 
 log "Ensuring shell UI fallback config for Niri (top bar, launcher, Win+Space)..."
+ensure_niri_wallpaper
 ensure_niri_shell_fallback
 
 log "Selecting wallpaper from current desktop config..."
