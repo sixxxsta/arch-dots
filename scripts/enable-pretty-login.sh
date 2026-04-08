@@ -311,7 +311,7 @@ DimBackgroundImage="0.22"
 BlurRadius="30"
 ScaleImageCropped="true"
 
-ScreenPadding="40"
+ScreenPadding="0"
 FormPosition="center"
 HaveFormBackground="true"
 PartialBlur="true"
@@ -322,6 +322,7 @@ BackgroundColor="#05070dff"
 MainColor="#ffffffff"
 AccentColor="#22d3eeff"
 OverrideLoginButtonTextColor="#ffffffff"
+FormBorderColor="#00000000"
 RoundCorners="22"
 HeaderText="Welcome"
 EOF
@@ -329,9 +330,11 @@ else
     sudo tee /usr/share/sddm/themes/sugar-candy/theme.conf.user >/dev/null << 'EOF'
 DimBackgroundImage="0.32"
 BlurRadius="30"
+ScreenPadding="0"
 FormPosition="center"
 HaveFormBackground="true"
 PartialBlur="true"
+FormBorderColor="#00000000"
 RoundCorners="22"
 HeaderText="Welcome"
 EOF
