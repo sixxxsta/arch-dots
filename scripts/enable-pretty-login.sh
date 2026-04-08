@@ -346,11 +346,11 @@ EOF
 fi
 
 log "Switching display manager to SDDM..."
-sudo systemctl disable --now ly 2>/dev/null || true
-sudo systemctl disable --now greetd 2>/dev/null || true
+sudo systemctl disable ly 2>/dev/null || true
+sudo systemctl disable greetd 2>/dev/null || true
 sudo systemctl unmask sddm.service 2>/dev/null || true
 sudo systemctl set-default graphical.target
-sudo systemctl enable --now sddm
+sudo systemctl enable sddm
 sudo ln -sf /usr/lib/systemd/system/sddm.service /etc/systemd/system/display-manager.service
 
 log "Applied configuration:"
