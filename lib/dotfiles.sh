@@ -48,6 +48,7 @@ deploy_shared_configs() {
     local shared_configs=(
         "kitty"
         "fish"
+        "flameshot"
         "gtk-3.0"
         "gtk-4.0"
         "noctalia"

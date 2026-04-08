@@ -266,7 +266,7 @@ binds {
     // Mod+Shift+Space { switch-layout "prev"; }
 
     // Flameshot UI picker on PrintScreen.
-    Print { spawn-sh "QT_QPA_PLATFORM=wayland flameshot gui"; }
+    Print { spawn-sh "QT_QPA_PLATFORM=wayland flameshot gui --accept-on-select --path $HOME/Pictures/Screenshots"; }
     Mod+Shift+S { screenshot; }
     Ctrl+Print { screenshot-screen; }
     Alt+Print { screenshot-window; }
