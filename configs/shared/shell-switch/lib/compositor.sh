@@ -149,7 +149,8 @@ reload_compositor() {
     case "$compositor" in
         niri)
             if command -v niri &>/dev/null; then
-                if niri msg action reload-config &>/dev/null; then
+                if niri msg action load-config-file "$HOME/.config/niri/config.kdl" &>/dev/null || \
+                   niri msg action reload-config &>/dev/null; then
                     success "Reloaded niri configuration"
                     return 0
                 else
