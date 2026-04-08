@@ -3,3 +3,4 @@ nemo
 fish
 fastfetch
 eza
+flameshot
