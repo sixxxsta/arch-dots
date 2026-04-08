@@ -49,12 +49,18 @@ configure_greetd() {
     log_info "Configuring greetd with regreet..."
 
     sudo mkdir -p /etc/greetd
+    sudo tee /usr/local/bin/start-regreet > /dev/null << 'EOF'
+#!/bin/sh
+exec /usr/bin/cage -s -- /usr/bin/regreet
+EOF
+    sudo chmod +x /usr/local/bin/start-regreet
+
     sudo tee /etc/greetd/config.toml > /dev/null << 'EOF'
 [terminal]
 vt = 1
 
 [default_session]
-command = "cage -s -- regreet"
+command = "/usr/local/bin/start-regreet"
 user = "greeter"
 EOF
 
