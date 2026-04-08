@@ -90,12 +90,11 @@ ensure_niri_wallpaper() {
         fi
 
         if [[ -n "${source_wall}" && -f "${source_wall}" ]]; then
-            if [[ "$(readlink -f "${source_wall}")" != "$(readlink -f "${niri_wall}")" ]]; then
-                cp -f "${source_wall}" "${niri_wall}"
-                log "Niri wallpaper synced: ${source_wall}"
-            else
-                log "Niri wallpaper already in place: ${source_wall}"
-            fi
+            # Canonical target + compatibility aliases.
+            ln -sfn "${source_wall}" "${niri_wall_dir}/main-wallpaper.jpg"
+            ln -sfn "${source_wall}" "${niri_wall_dir}/main-wallpaper.png"
+            ln -sfn "${source_wall}" "${niri_wall_dir}/wallpaper.png"
+            log "Niri wallpaper linked to: ${source_wall}"
 
             if command -v swaybg >/dev/null 2>&1; then
                 pkill -x swaybg >/dev/null 2>&1 || true
@@ -245,9 +244,6 @@ log "Installing SDDM and required runtime dependencies..."
 sudo pacman -S --needed --noconfirm \
     sddm \
     git \
-    swaybg \
-    waybar \
-    wofi \
     qt6-5compat \
     qt6-declarative \
     qt6-svg
@@ -278,9 +274,7 @@ Exec=niri-session
 Type=Application
 EOF
 
-log "Ensuring shell UI fallback config for Niri (top bar, launcher, Win+Space)..."
-ensure_niri_wallpaper
-ensure_niri_shell_fallback
+log "Skipping desktop/session changes (wallpaper, panel, keybinds) by design."
 
 log "Selecting wallpaper from current desktop config..."
 WALLPAPER_SRC="$(detect_current_wallpaper || true)"
@@ -323,11 +317,11 @@ HaveFormBackground="true"
 PartialBlur="true"
 FullBlur="false"
 
-FormBackgroundColor="\"#090d16e6\""
-BackgroundColor="\"#0b1020ff\""
-MainColor="\"#f8fafcff\""
-AccentColor="\"#67e8f9ff\""
-OverrideLoginButtonTextColor="\"#f8fafcff\""
+FormBackgroundColor="#111827ee"
+BackgroundColor="#05070dff"
+MainColor="#ffffffff"
+AccentColor="#22d3eeff"
+OverrideLoginButtonTextColor="#ffffffff"
 RoundCorners="22"
 HeaderText="Welcome"
 EOF
