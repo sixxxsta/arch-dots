@@ -260,7 +260,7 @@ EOF
 // This file is managed by shell-switch - manual edits will be overwritten
 // Current shell: ${shell_name}
 
-    spawn-at-startup "bash" "-lc" "${fallback_launch_cmd}"
+spawn-at-startup "dms" "run"
 EOF
 
         # Generate shell-switcher-binds.kdl
@@ -272,9 +272,9 @@ EOF
 binds {
     // === MANAGED BY SHELL-SWITCH - DO NOT EDIT THIS SECTION ===
 
-    // App Launcher for ${shell_name} (with fallback)
+    // App Launcher for ${shell_name}
     Mod+Space hotkey-overlay-title="Open ${shell_name} Launcher" {
-        spawn "bash" "-lc" "${fallback_launcher_cmd}";
+        spawn "dms" "ipc" "call" "spotlight" "toggle";
     }
 
     // Shell Switcher
