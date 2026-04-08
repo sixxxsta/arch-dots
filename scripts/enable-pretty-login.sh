@@ -159,7 +159,11 @@ fi
 log "Switching display manager to SDDM..."
 sudo systemctl disable --now ly 2>/dev/null || true
 sudo systemctl disable --now greetd 2>/dev/null || true
+sudo systemctl disable --now getty@tty1.service 2>/dev/null || true
+sudo systemctl unmask sddm.service 2>/dev/null || true
+sudo systemctl set-default graphical.target
 sudo systemctl enable --now sddm
+sudo ln -sf /usr/lib/systemd/system/sddm.service /etc/systemd/system/display-manager.service
 sudo systemctl restart sddm
 
 log "Applied configuration:"
@@ -168,6 +172,11 @@ log "Direct /etc/sddm.conf:"
 sudo cat /etc/sddm.conf
 log "Theme directory check:"
 ls /usr/share/sddm/themes | sed 's/^/[pretty-login] theme: /'
+log "Systemd checks:"
+systemctl is-enabled sddm || true
+systemctl is-active sddm || true
+systemctl get-default || true
+systemctl status display-manager --no-pager -l | tail -n 30 || true
 
 log "Done. Reboot now to see the new minimalist login."
 if [[ -n "${SUGAR_THEME}" ]]; then
