@@ -50,6 +50,31 @@ install_aur_first_available() {
     return 1
 }
 
+install_sugar_candy_from_git() {
+    local target_theme_dir="/usr/share/sddm/themes/sugar-candy"
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+
+    if ! command -v git >/dev/null 2>&1; then
+        log "git is required for Sugar Candy fallback install."
+        rm -rf "${tmp_dir}"
+        return 1
+    fi
+
+    log "Installing Sugar Candy theme from GitHub fallback..."
+    if git clone --depth 1 https://github.com/Kangie/sddm-sugar-candy.git "${tmp_dir}/sugar-candy"; then
+        sudo rm -rf "${target_theme_dir}"
+        sudo mkdir -p "${target_theme_dir}"
+        sudo cp -r "${tmp_dir}/sugar-candy/"* "${target_theme_dir}/"
+        rm -rf "${tmp_dir}"
+        log "Installed fallback theme to ${target_theme_dir}"
+        return 0
+    fi
+
+    rm -rf "${tmp_dir}"
+    return 1
+}
+
 if [[ "${EUID}" -eq 0 ]]; then
     log "Run this script as a normal user (it uses sudo internally)."
     exit 1
@@ -77,6 +102,11 @@ if command -v paru >/dev/null 2>&1; then
         sddm-theme-catppuccin \
         catppuccin-sddm \
         || true
+fi
+
+# If AUR did not provide Sugar Candy, try direct GitHub fallback.
+if [[ ! -d /usr/share/sddm/themes/sugar-candy ]]; then
+    install_sugar_candy_from_git || true
 fi
 
 if [[ -d /usr/share/sddm/themes ]]; then
@@ -123,6 +153,12 @@ EOF
     log "Using SDDM theme: ${SELECTED_THEME}"
 else
     log "No SDDM themes detected in /usr/share/sddm/themes; keeping defaults."
+fi
+
+# Ensure theme exists before continuing.
+if [[ -n "${SELECTED_THEME}" && ! -d "/usr/share/sddm/themes/${SELECTED_THEME}" ]]; then
+    log "Selected theme directory is missing: /usr/share/sddm/themes/${SELECTED_THEME}"
+    exit 1
 fi
 
 if [[ -n "${SUGAR_THEME}" ]]; then
@@ -176,5 +212,8 @@ log "Switching display manager to SDDM..."
 sudo systemctl disable --now ly 2>/dev/null || true
 sudo systemctl disable --now greetd 2>/dev/null || true
 sudo systemctl enable --now sddm
+
+log "Active theme config:"
+sudo cat /etc/sddm.conf.d/10-theme.conf || true
 
 log "Done. Reboot to see the new login screen."
