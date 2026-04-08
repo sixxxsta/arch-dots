@@ -110,7 +110,14 @@ fi
 
 log "Writing SDDM theme selection..."
 sudo mkdir -p /etc/sddm.conf.d
-sudo tee /etc/sddm.conf.d/10-theme.conf >/dev/null << 'EOF'
+sudo rm -f /etc/sddm.conf.d/*theme*.conf 2>/dev/null || true
+sudo tee /etc/sddm.conf.d/99-theme.conf >/dev/null << 'EOF'
+[Theme]
+Current=sugar-candy
+EOF
+
+# Also write a direct /etc/sddm.conf override for maximum compatibility.
+sudo tee /etc/sddm.conf >/dev/null << 'EOF'
 [Theme]
 Current=sugar-candy
 EOF
@@ -156,7 +163,9 @@ sudo systemctl enable --now sddm
 sudo systemctl restart sddm
 
 log "Applied configuration:"
-sudo cat /etc/sddm.conf.d/10-theme.conf
+sudo cat /etc/sddm.conf.d/99-theme.conf
+log "Direct /etc/sddm.conf:"
+sudo cat /etc/sddm.conf
 log "Theme directory check:"
 ls /usr/share/sddm/themes | sed 's/^/[pretty-login] theme: /'
 
