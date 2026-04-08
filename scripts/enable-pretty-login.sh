@@ -165,7 +165,7 @@ EOF
     fi
 
     if command -v niri >/dev/null 2>&1; then
-        niri msg action load-config-file "$HOME/.config/niri/config.kdl" >/dev/null 2>&1 || \
+        niri msg action load-config-file >/dev/null 2>&1 || \
             niri msg action reload-config >/dev/null 2>&1 || true
     fi
 
