@@ -8,7 +8,7 @@ binds {
 
     // App Launcher for Noctalia Shell
     Mod+Space hotkey-overlay-title="Open Noctalia Shell Launcher" {
-        spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "toggle";
+        spawn "bash" "-lc" "if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; fi";
     }
 
     // Shell Switcher

@@ -2,4 +2,4 @@
 // This file is managed by shell-switch - manual edits will be overwritten
 // Current shell: Noctalia Shell
 
-spawn-at-startup "qs" "-c" "noctalia-shell"
+spawn-at-startup "bash" "-lc" "if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell; elif command -v dms >/dev/null 2>&1; then dms run; fi"

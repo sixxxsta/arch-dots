@@ -228,10 +228,14 @@ configure_shell_startup() {
         shell_name="Noctalia Shell"
         launch_cmd="qs -c noctalia-shell"
         launcher_cmd="qs -c noctalia-shell ipc call launcher toggle"
+        fallback_launch_cmd='if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell; elif command -v dms >/dev/null 2>&1; then dms run; fi'
+        fallback_launcher_cmd='if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; fi'
     else
         shell_name="Dank Material Shell"
         launch_cmd="dms run"
         launcher_cmd="dms ipc call spotlight toggle"
+        fallback_launch_cmd='if command -v dms >/dev/null 2>&1; then dms run; elif command -v qs >/dev/null 2>&1; then qs -c noctalia-shell; fi'
+        fallback_launcher_cmd='if command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; elif command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; fi'
     fi
 
     if [ "$compositor" = "hyprland" ]; then
@@ -245,7 +249,7 @@ configure_shell_startup() {
 # This file is managed by shell-switch - manual edits will be overwritten
 # Current shell: ${shell_name}
 
-exec-once = ${launch_cmd}
+    exec-once = bash -lc '${fallback_launch_cmd}'
 EOF
 
         # Generate shell-binds.conf
@@ -255,7 +259,7 @@ EOF
 # Current shell: ${shell_name}
 
 # Application launcher
-bind = SUPER, Space, exec, ${launcher_cmd}
+    bind = SUPER, Space, exec, bash -lc '${fallback_launcher_cmd}'
 EOF
 
         log_success "Hyprland shell configuration created"
@@ -265,20 +269,13 @@ EOF
         local niri_config_dir="$config_dir/niri"
         mkdir -p "$niri_config_dir"
 
-        # Format command as quoted arguments for KDL
-        local launch_cmd_args
-        launch_cmd_args=$(echo "$launch_cmd" | awk '{for(i=1;i<=NF;i++) printf "\"%s\" ", $i}' | sed 's/ $//')
-
-        local launcher_cmd_args
-        launcher_cmd_args=$(echo "$launcher_cmd" | awk '{for(i=1;i<=NF;i++) printf "\"%s\" ", $i}' | sed 's/ $//')
-
         # Generate shell-switcher-startup.kdl
         cat > "$niri_config_dir/shell-switcher-startup.kdl" << EOF
 // Shell Switcher - Startup Configuration
 // This file is managed by shell-switch - manual edits will be overwritten
 // Current shell: ${shell_name}
 
-spawn-at-startup ${launch_cmd_args}
+    spawn-at-startup "bash" "-lc" "${fallback_launch_cmd}"
 EOF
 
         # Generate shell-switcher-binds.kdl
@@ -288,10 +285,19 @@ EOF
 // Current shell: ${shell_name}
 
 binds {
-    // Application launcher
-    Mod+Space hotkey-overlay-title="Launcher" {
-        spawn ${launcher_cmd_args};
+    // === MANAGED BY SHELL-SWITCH - DO NOT EDIT THIS SECTION ===
+
+    // App Launcher for ${shell_name} (with fallback)
+    Mod+Space hotkey-overlay-title="Open ${shell_name} Launcher" {
+        spawn "bash" "-lc" "${fallback_launcher_cmd}";
     }
+
+    // Shell Switcher
+    Ctrl+Shift+S hotkey-overlay-title="Switch Desktop Shell" {
+        spawn "kitty" "--class=floating-kitty" "shell-switch";
+    }
+
+    // === END MANAGED SECTION ===
 }
 EOF
 

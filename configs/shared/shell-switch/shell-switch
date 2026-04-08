@@ -195,8 +195,14 @@ build_fzf_menu() {
     local current_shell="$1"
     local shells
     shells=$(get_all_shells)
+    local has_installed=0
 
     for shell in $shells; do
+        if ! is_shell_installed "$shell"; then
+            continue
+        fi
+
+        has_installed=1
         local shell_name
         shell_name=$(get_shell_info "$shell" "name")
 
@@ -206,6 +212,10 @@ build_fzf_menu() {
             echo "${ICON_INACTIVE} ${shell_name}|${shell}"
         fi
     done
+
+    if [[ "$has_installed" -eq 0 ]]; then
+        return 1
+    fi
 }
 
 #######################################
@@ -226,7 +236,10 @@ show_switcher_tui() {
     fi
 
     local menu
-    menu=$(build_fzf_menu "$current_shell")
+    if ! menu=$(build_fzf_menu "$current_shell"); then
+        error "No supported shells are installed"
+        return 1
+    fi
 
     local selected
     selected=$(echo "$menu" | fzf \
@@ -301,6 +314,11 @@ main() {
 
     local new_name
     new_name=$(get_shell_info "$new_shell" "name")
+
+    if ! is_shell_installed "$new_shell"; then
+        error "$new_name is not installed"
+        exit 1
+    fi
 
     echo ""
     info "Switching from $current_name to $new_name..."
