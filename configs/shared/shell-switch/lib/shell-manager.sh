@@ -13,14 +13,6 @@ declare -A SHELL_DB
 
 # Initialize shell database
 init_shell_db() {
-    # Noctalia Shell
-    SHELL_DB[noctalia.name]="Noctalia Shell"
-    SHELL_DB[noctalia.launch_cmd]="bash -lc '(command -v qs >/dev/null 2>&1 && qs -c noctalia-shell) || (command -v quickshell >/dev/null 2>&1 && quickshell -c noctalia-shell)'"
-    SHELL_DB[noctalia.launcher_cmd]="bash -lc '(command -v qs >/dev/null 2>&1 && qs -c noctalia-shell ipc call launcher toggle) || (command -v quickshell >/dev/null 2>&1 && quickshell -c noctalia-shell ipc call launcher toggle)'"
-    SHELL_DB[noctalia.process_pattern]="(qs|quickshell).*noctalia-shell"
-    SHELL_DB[noctalia.packages]="noctalia-shell noctalia-shell-git"
-    SHELL_DB[noctalia.id]="noctalia"
-
     # DMS (Dank Material Shell)
     SHELL_DB[dms.name]="Dank Material Shell"
     SHELL_DB[dms.launch_cmd]="dms run"
@@ -28,6 +20,14 @@ init_shell_db() {
     SHELL_DB[dms.process_pattern]="dms run"
     SHELL_DB[dms.packages]="dms-shell dms-shell-bin dms-shell-git"
     SHELL_DB[dms.id]="dms"
+
+    # Noctalia Shell (legacy support only)
+    SHELL_DB[noctalia.name]="Noctalia Shell"
+    SHELL_DB[noctalia.launch_cmd]="bash -lc '(command -v qs >/dev/null 2>&1 && qs -c noctalia-shell) || (command -v quickshell >/dev/null 2>&1 && quickshell -c noctalia-shell)'"
+    SHELL_DB[noctalia.launcher_cmd]="bash -lc '(command -v qs >/dev/null 2>&1 && qs -c noctalia-shell ipc call launcher toggle) || (command -v quickshell >/dev/null 2>&1 && quickshell -c noctalia-shell ipc call launcher toggle)'"
+    SHELL_DB[noctalia.process_pattern]="(qs|quickshell).*noctalia-shell"
+    SHELL_DB[noctalia.packages]="noctalia-shell noctalia-shell-git"
+    SHELL_DB[noctalia.id]="noctalia"
 }
 
 # Initialize on source
@@ -63,7 +63,7 @@ get_shell_info() {
 #   Space-separated list of shell IDs to stdout
 #######################################
 get_all_shells() {
-    echo "noctalia dms"
+    echo "dms"
 }
 
 #######################################

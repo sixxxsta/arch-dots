@@ -147,16 +147,10 @@ deploy_niri_configs() {
 merge_dms_configs() {
     local repo_dir="$1"
     local compositor="$2"  # "hyprland" or "niri"
-    local selected_shell="${3:-dms}"  # "noctalia" or "dms"
+    local selected_shell="${3:-dms}"  # "dms" or "noctalia"
     local user_home=$(get_user_home)
     local config_dir="$user_home/.config"
     local dms_dir="$config_dir/DankMaterialShell"
-
-    # Skip DMS config if noctalia is selected
-    if [ "$selected_shell" = "noctalia" ]; then
-        log_info "Noctalia selected - skipping DMS configuration"
-        return 0
-    fi
 
     log_info "Merging DMS configurations for $compositor..."
 
@@ -214,7 +208,7 @@ merge_dms_configs() {
 configure_shell_startup() {
     local repo_dir="$1"
     local compositor="$2"  # "hyprland" or "niri"
-    local selected_shell="${3:-noctalia}"
+    local selected_shell="${3:-dms}"
     local user_home=$(get_user_home)
     local config_dir="$user_home/.config"
 
@@ -224,19 +218,9 @@ configure_shell_startup() {
     local launch_cmd
     local launcher_cmd
 
-    if [ "$selected_shell" = "noctalia" ]; then
-        shell_name="Noctalia Shell"
-        launch_cmd="qs -c noctalia-shell"
-        launcher_cmd="qs -c noctalia-shell ipc call launcher toggle"
-        fallback_launch_cmd='if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell; elif command -v dms >/dev/null 2>&1; then dms run; fi'
-        fallback_launcher_cmd='if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell ipc call launcher toggle; elif command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; fi'
-    else
-        shell_name="Dank Material Shell"
-        launch_cmd="dms run"
-        launcher_cmd="dms ipc call spotlight toggle"
-        fallback_launch_cmd='if command -v dms >/dev/null 2>&1; then dms run; elif command -v qs >/dev/null 2>&1; then qs -c noctalia-shell; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell; fi'
-        fallback_launcher_cmd='if command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; elif command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell ipc call launcher toggle; fi'
-    fi
+    shell_name="Dank Material Shell"
+    launch_cmd="dms run"
+    launcher_cmd="dms ipc call spotlight toggle"
 
     if [ "$compositor" = "hyprland" ]; then
         # Create hyprland shell startup config
@@ -249,7 +233,7 @@ configure_shell_startup() {
 # This file is managed by shell-switch - manual edits will be overwritten
 # Current shell: ${shell_name}
 
-    exec-once = bash -lc '${fallback_launch_cmd}'
+    exec-once = dms run
 EOF
 
         # Generate shell-binds.conf
@@ -259,7 +243,7 @@ EOF
 # Current shell: ${shell_name}
 
 # Application launcher
-    bind = SUPER, Space, exec, bash -lc '${fallback_launcher_cmd}'
+    bind = SUPER, Space, exec, dms ipc call spotlight toggle
 EOF
 
         log_success "Hyprland shell configuration created"
@@ -310,7 +294,7 @@ deploy_configurations() {
     local repo_dir="$1"
     local install_hyprland="$2"
     local install_niri="$3"
-    local selected_shell="${4:-noctalia}"
+    local selected_shell="${4:-dms}"
 
     log_step "Deploying Configurations"
 

@@ -20,7 +20,7 @@ source "$REPO_DIR/lib/dcli.sh"
 INSTALL_HYPRLAND=false
 INSTALL_NIRI=false
 INSTALL_DCLI=false
-SELECTED_SHELL="noctalia"  # Default to noctalia
+SELECTED_SHELL="dms"  # Default to DMS
 OPTIONAL_APPS=()
 NVIDIA_HEADERS=""
 
@@ -31,7 +31,7 @@ show_welcome() {
     cat << 'EOF'
 This installer will set up Beautiful Dots configurations for:
   • Niri - Scrollable-tiling Wayland compositor
-  • Desktop Shell - Choose between Noctalia (recommended) or DMS
+    • Desktop Shell - DMS (recommended) or Noctalia
   • Catppuccin Mocha theme across all applications
   • NVIDIA GPU support (auto-detected and installed if available)
 
@@ -39,7 +39,7 @@ The installer will:
   1. Check your system requirements
   2. Detect and install NVIDIA drivers if GPU is present
   3. Install the Niri compositor and desktop shell
-  4. Let you choose your preferred desktop shell (Noctalia or DMS)
+    4. Let you choose your preferred desktop shell (DMS or Noctalia)
   5. Install required packages and optional applications
     6. Install a nice greetd/regreet login screen
     7. Deploy configuration files (via symlinks)
@@ -72,14 +72,14 @@ select_compositors() {
     echo ""
 }
 
-# User selection menu for shell (noctalia or dms)
+# User selection menu for shell (dms or noctalia)
 select_shell() {
     log_step "Desktop Shell Selection"
 
     echo "Which desktop shell would you like to use?"
     echo ""
-    echo "1) Noctalia Shell (Recommended) - Lightweight, stable, Material Design"
-    echo "2) Dank Material Shell (DMS) - Feature-rich, some users report install issues"
+    echo "1) Dank Material Shell (DMS) (Recommended) - Feature-rich"
+    echo "2) Noctalia Shell - Legacy compatibility"
     echo ""
 
     local choice
@@ -89,11 +89,11 @@ select_shell() {
         choice=${choice:-1}
         case $choice in
             1)
-                SELECTED_SHELL="noctalia"
+                SELECTED_SHELL="dms"
                 break
                 ;;
             2)
-                SELECTED_SHELL="dms"
+                SELECTED_SHELL="noctalia"
                 break
                 ;;
             *)
@@ -103,10 +103,10 @@ select_shell() {
     done
 
     echo ""
-    if [ "$SELECTED_SHELL" = "noctalia" ]; then
-        log_info "Selected shell: Noctalia Shell"
-    else
+    if [ "$SELECTED_SHELL" = "dms" ]; then
         log_info "Selected shell: Dank Material Shell (DMS)"
+    else
+        log_info "Selected shell: Noctalia Shell"
     fi
     echo ""
 }
@@ -231,10 +231,10 @@ post_install() {
     echo "  3. Log in and enjoy your beautiful desktop!"
     echo ""
     echo -e "${CYAN}Key Bindings:${NC}"
-    if [ "$SELECTED_SHELL" = "noctalia" ]; then
-        echo "  • Super+Space    - Application launcher (Noctalia)"
-    else
+    if [ "$SELECTED_SHELL" = "dms" ]; then
         echo "  • Super+Space    - Application launcher (DMS)"
+    else
+        echo "  • Super+Space    - Application launcher (Noctalia)"
     fi
     echo "  • Super+T        - Terminal (kitty)"
     echo "  • Super+Q        - Close window"

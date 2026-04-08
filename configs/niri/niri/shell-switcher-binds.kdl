@@ -1,14 +1,14 @@
 // Shell Switcher - Keybindings
 // This file is managed by shell-switch for the switcher and launcher bindings
-// Current shell: Noctalia Shell
+// Current shell: DMS
 // You can add additional shell-specific keybindings below the managed section
 
 binds {
     // === MANAGED BY SHELL-SWITCH - DO NOT EDIT THIS SECTION ===
 
-    // App Launcher for Noctalia Shell
-    Mod+Space hotkey-overlay-title="Open Noctalia Shell Launcher" {
-        spawn "bash" "-lc" "if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell ipc call launcher toggle; elif command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; fi";
+    // App Launcher for DMS
+    Mod+Space hotkey-overlay-title="Open DMS Launcher" {
+        spawn "dms" "ipc" "call" "spotlight" "toggle";
     }
 
     // Shell Switcher

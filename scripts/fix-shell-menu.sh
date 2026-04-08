@@ -22,7 +22,7 @@ cat > "${START_FILE}" << 'EOF'
 // This file is managed by shell-switch - manual edits will be overwritten
 // Current shell: Auto Fallback
 
-spawn-at-startup "bash" "-lc" "if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell; elif command -v dms >/dev/null 2>&1; then dms run; fi"
+spawn-at-startup "dms" "run"
 EOF
 
 cat > "${BINDS_FILE}" << 'EOF'
@@ -31,9 +31,9 @@ cat > "${BINDS_FILE}" << 'EOF'
 // Current shell: Auto Fallback
 
 binds {
-    // App Launcher with fallback
+    // App launcher
     Mod+Space hotkey-overlay-title="Open Launcher" {
-        spawn "bash" "-lc" "if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell ipc call launcher toggle; elif command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; fi";
+        spawn "dms" "ipc" "call" "spotlight" "toggle";
     }
 
     // Shell switcher picker
@@ -59,18 +59,15 @@ if command -v niri >/dev/null 2>&1; then
     niri msg action reload-config >/dev/null 2>&1 || true
 fi
 
-if ! pgrep -f 'qs.*noctalia-shell|quickshell.*noctalia-shell|dms run' >/dev/null 2>&1; then
-    if command -v qs >/dev/null 2>&1; then
-        nohup qs -c noctalia-shell >/dev/null 2>&1 &
-        log "Started Noctalia shell"
-    elif command -v quickshell >/dev/null 2>&1; then
-        nohup quickshell -c noctalia-shell >/dev/null 2>&1 &
-        log "Started Noctalia shell (quickshell)"
-    elif command -v dms >/dev/null 2>&1; then
+if ! pgrep -f 'dms run|waybar' >/dev/null 2>&1; then
+    if command -v dms >/dev/null 2>&1; then
         nohup dms run >/dev/null 2>&1 &
         log "Started DMS shell"
+    elif command -v waybar >/dev/null 2>&1; then
+        nohup waybar >/dev/null 2>&1 &
+        log "Started Waybar fallback"
     else
-        log "Neither Noctalia nor DMS is installed."
+        log "Neither DMS nor Waybar is installed."
         exit 1
     fi
 fi
