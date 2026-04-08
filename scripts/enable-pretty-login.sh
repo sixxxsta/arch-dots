@@ -74,13 +74,15 @@ EOF
 
 ensure_niri_wallpaper() {
         local niri_wall_dir="${HOME}/.config/niri/wallpapers"
-        local niri_wall="${niri_wall_dir}/wallpaper.png"
+        local niri_wall="${niri_wall_dir}/main-wallpaper.png"
         local source_wall=""
 
         mkdir -p "${niri_wall_dir}"
 
-        if [[ -f "${REPO_DIR}/assets/wallpapers/wallpaper.png" ]]; then
-                source_wall="${REPO_DIR}/assets/wallpapers/wallpaper.png"
+        if [[ -f "${REPO_DIR}/assets/wallpapers/main-wallpaper.png" ]]; then
+            source_wall="${REPO_DIR}/assets/wallpapers/main-wallpaper.png"
+        elif [[ -f "${REPO_DIR}/assets/wallpapers/wallpaper.png" ]]; then
+            source_wall="${REPO_DIR}/assets/wallpapers/wallpaper.png"
         else
                 source_wall="$(find "${REPO_DIR}/assets/wallpapers" -maxdepth 1 -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' \) | head -n 1 || true)"
         fi
@@ -108,10 +110,10 @@ ensure_niri_wallpaper() {
                 cat > "${startup_cfg}" << 'EOF'
 // Start up Commands
 
-spawn-sh-at-startup "if [ -f \"$HOME/.config/niri/wallpapers/wallpaper.png\" ]; then pkill -x swaybg >/dev/null 2>&1 || true; swaybg -i \"$HOME/.config/niri/wallpapers/wallpaper.png\" -m fill; fi"
+spawn-sh-at-startup "if [ -f \"$HOME/.config/niri/wallpapers/main-wallpaper.png\" ]; then pkill -x swaybg >/dev/null 2>&1 || true; swaybg -i \"$HOME/.config/niri/wallpapers/main-wallpaper.png\" -m fill; fi"
 EOF
-        elif ! grep -q 'wallpapers/wallpaper.png' "${startup_cfg}"; then
-                printf '\nspawn-sh-at-startup "if [ -f \\\"$HOME/.config/niri/wallpapers/wallpaper.png\\\" ]; then pkill -x swaybg >/dev/null 2>&1 || true; swaybg -i \\\"$HOME/.config/niri/wallpapers/wallpaper.png\\\" -m fill; fi"\n' >> "${startup_cfg}"
+    elif ! grep -q 'wallpapers/main-wallpaper.png' "${startup_cfg}"; then
+        printf '\nspawn-sh-at-startup "if [ -f \\\"$HOME/.config/niri/wallpapers/main-wallpaper.png\\\" ]; then pkill -x swaybg >/dev/null 2>&1 || true; swaybg -i \\\"$HOME/.config/niri/wallpapers/main-wallpaper.png\\\" -m fill; fi"\n' >> "${startup_cfg}"
         fi
 }
 
@@ -204,9 +206,12 @@ detect_current_wallpaper() {
     fi
 
     for wp in \
+        "${user_home}/.config/niri/wallpapers/main-wallpaper.png" \
         "${user_home}/.config/niri/wallpapers/wallpaper.png" \
+        "${user_home}/.config/hypr/wallpapers/main-wallpaper.png" \
         "${user_home}/.config/hypr/wallpapers/wallpaper.png" \
         "${user_home}/.config/donarch/assets/wallpapers/wallpaper.png" \
+        "${REPO_DIR}/assets/wallpapers/main-wallpaper.png" \
         "${REPO_DIR}/assets/wallpapers/wallpaper.png"; do
         if [[ -f "${wp}" ]]; then
             echo "${wp}"

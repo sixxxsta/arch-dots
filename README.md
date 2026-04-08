@@ -249,8 +249,10 @@ Changes take effect immediately (or after reloading the compositor with `Super+S
 
 Replace the wallpaper at:
 ```bash
-assets/wallpapers/wallpaper.png
+assets/wallpapers/main-wallpaper.png
 ```
+
+`assets/wallpapers/wallpaper.png` is kept as a compatibility alias.
 
 Or edit the compositor config to point to your own wallpaper.
 
