@@ -15,9 +15,9 @@ declare -A SHELL_DB
 init_shell_db() {
     # Noctalia Shell
     SHELL_DB[noctalia.name]="Noctalia Shell"
-    SHELL_DB[noctalia.launch_cmd]="qs -c noctalia-shell"
-    SHELL_DB[noctalia.launcher_cmd]="qs -c noctalia-shell ipc call launcher toggle"
-    SHELL_DB[noctalia.process_pattern]="qs.*noctalia-shell"
+    SHELL_DB[noctalia.launch_cmd]="bash -lc '(command -v qs >/dev/null 2>&1 && qs -c noctalia-shell) || (command -v quickshell >/dev/null 2>&1 && quickshell -c noctalia-shell)'"
+    SHELL_DB[noctalia.launcher_cmd]="bash -lc '(command -v qs >/dev/null 2>&1 && qs -c noctalia-shell ipc call launcher toggle) || (command -v quickshell >/dev/null 2>&1 && quickshell -c noctalia-shell ipc call launcher toggle)'"
+    SHELL_DB[noctalia.process_pattern]="(qs|quickshell).*noctalia-shell"
     SHELL_DB[noctalia.packages]="noctalia-shell noctalia-shell-git"
     SHELL_DB[noctalia.id]="noctalia"
 

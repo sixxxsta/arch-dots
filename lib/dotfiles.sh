@@ -228,14 +228,14 @@ configure_shell_startup() {
         shell_name="Noctalia Shell"
         launch_cmd="qs -c noctalia-shell"
         launcher_cmd="qs -c noctalia-shell ipc call launcher toggle"
-        fallback_launch_cmd='if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell; elif command -v dms >/dev/null 2>&1; then dms run; fi'
-        fallback_launcher_cmd='if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; fi'
+        fallback_launch_cmd='if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell; elif command -v dms >/dev/null 2>&1; then dms run; fi'
+        fallback_launcher_cmd='if command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell ipc call launcher toggle; elif command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; fi'
     else
         shell_name="Dank Material Shell"
         launch_cmd="dms run"
         launcher_cmd="dms ipc call spotlight toggle"
-        fallback_launch_cmd='if command -v dms >/dev/null 2>&1; then dms run; elif command -v qs >/dev/null 2>&1; then qs -c noctalia-shell; fi'
-        fallback_launcher_cmd='if command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; elif command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; fi'
+        fallback_launch_cmd='if command -v dms >/dev/null 2>&1; then dms run; elif command -v qs >/dev/null 2>&1; then qs -c noctalia-shell; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell; fi'
+        fallback_launcher_cmd='if command -v dms >/dev/null 2>&1; then dms ipc call spotlight toggle; elif command -v qs >/dev/null 2>&1; then qs -c noctalia-shell ipc call launcher toggle; elif command -v quickshell >/dev/null 2>&1; then quickshell -c noctalia-shell ipc call launcher toggle; fi'
     fi
 
     if [ "$compositor" = "hyprland" ]; then

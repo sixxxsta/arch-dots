@@ -8,7 +8,7 @@ binds {
 
     // App Launcher for {{SHELL_NAME}}
     Mod+Space hotkey-overlay-title="Open {{SHELL_NAME}} Launcher" {
-        spawn "bash" "-lc" "{{LAUNCHER_CMD}} || (command -v qs >/dev/null 2>&1 && qs -c noctalia-shell ipc call launcher toggle) || (command -v dms >/dev/null 2>&1 && dms ipc call spotlight toggle)";
+        spawn "bash" "-lc" "{{LAUNCHER_CMD}} || (command -v qs >/dev/null 2>&1 && qs -c noctalia-shell ipc call launcher toggle) || (command -v quickshell >/dev/null 2>&1 && quickshell -c noctalia-shell ipc call launcher toggle) || (command -v dms >/dev/null 2>&1 && dms ipc call spotlight toggle)";
     }
 
     // Shell Switcher
