@@ -265,8 +265,10 @@ binds {
     // Mod+Space       { switch-layout "next"; }
     // Mod+Shift+Space { switch-layout "prev"; }
 
-    // Flameshot UI picker on PrintScreen.
-    Print { spawn-sh "QT_QPA_PLATFORM=wayland flameshot gui --accept-on-select --path $HOME/Pictures/Screenshots"; }
+    // Print: copy selection to clipboard (Windows Snipping Tool style).
+    Print { spawn-sh "mkdir -p \"$HOME/Pictures/Screenshots\"; QT_QPA_PLATFORM=wayland flameshot gui --clipboard --path \"$HOME/Pictures/Screenshots\""; }
+    // Shift+Print: save selection directly to file.
+    Shift+Print { spawn-sh "mkdir -p \"$HOME/Pictures/Screenshots\"; QT_QPA_PLATFORM=wayland flameshot gui --accept-on-select --path \"$HOME/Pictures/Screenshots\""; }
     Mod+Shift+S { screenshot; }
     Ctrl+Print { screenshot-screen; }
     Alt+Print { screenshot-window; }
